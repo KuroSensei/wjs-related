@@ -1,5 +1,5 @@
 /*!
- * wjs-related v2.0.2
+ * wjs-related v2.0.2 | v1.0.4
  * Copyright 2018 zkreations
  * Developed by José Gregorio (fb.com/JGMateran)
  * Licensed under MIT (github.com/zkreations/wjs-related/blob/master/LICENSE)
@@ -15,8 +15,8 @@ var option = {
       length: 2, // Cantidad de entradas relacionadas a mostrar
       snippet: 100, // Cantidad texto para el resumen
       imgSize: 's256-c', // Tamaño de la imagen (cuadrada)
-      html: '', //html de los post
-      container: document.getElementById('wjs-related'), // Selector
+      html: "", //html de los post
+      container: 'relatedPost', // Selector CSS válido
       tags: ['plantilla','blogger'] // Etiquetas de prueba
 };
 
@@ -44,12 +44,14 @@ var related = (function(){
        document.body.appendChild( script );
 
        /*
+      
        Puedes modificar el html de la variable item como gustes.
-       claves:
+       expressiones:
        {title} => devuelve el título.
        {image} => Devuelve la imagen.
        {url} => Devuelve la url.
        {time} => Devuelve la fecha.
+
        */
  
        var HTMLParser = function(domHTML){
@@ -59,11 +61,9 @@ var related = (function(){
  
        function render( data ){
  
-       // console.log( data ); // Envia a consola los datos json. Eliminar si no se necesita
- 
        var title = data.title.$t;
  
-       var content = data.content.$t;
+       var content = data.summary.$t;
  
        var snippet = content.replace(/<[^>]*>?/g,'').substring( 0, option.snippet ) + '...';
  
@@ -110,16 +110,20 @@ var related = (function(){
        }
  
        window.relatedPost =  function( json ){
+
+          // console.log(json.feed.entry)
+
           var i = 0;
           var post;
           var length = option.length;
+          containerPost = document.querySelector(option.container);
  
           //vaciamos el contenedor
-          option.container.innerHTML = "";
+          containerPost.innerHTML = "";
  
           for ( ; i < length && ( post = json.feed.entry[ i ] ); i++ ){
              if ( option.id !== post.id.$t.split( '.post-' )[ 1 ] ){
-                option.container.innerHTML += render( post );
+                containerPost.innerHTML += render( post );
              } else {
                 length++;
              }
